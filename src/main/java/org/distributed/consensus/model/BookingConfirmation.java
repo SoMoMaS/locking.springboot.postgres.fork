@@ -10,6 +10,9 @@ public class BookingConfirmation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "bookinId")
     private long bookingId;
 

@@ -11,6 +11,9 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "name")
     private String name;
 
@@ -42,6 +45,10 @@ public class Booking {
         return id;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
     public long getRoomId() {
         return roomId;
     }
@@ -53,4 +60,26 @@ public class Booking {
     public Date getFinish() {
         return finish;
     }
+
+    // Setter für den Namen
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Setter für die Raum-ID
+    public void setRoomId(long roomId) {
+        this.roomId = roomId;
+    }
+
+    // Setter für das Startdatum
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    // Setter für das Enddatum
+    public void setFinish(Date finish) {
+        this.finish = finish;
+    }
+
+    // Setter für die Version (für das optimistische Locking)
 }
