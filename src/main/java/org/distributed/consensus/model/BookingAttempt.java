@@ -2,16 +2,14 @@ package org.distributed.consensus.model;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Entity
-@Table(name = "bookings")
-public class Booking {
-
+@Table(name = "booking_attempts")
+public class BookingAttempt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
     @Column(name = "name")
     private String name;
 
@@ -24,14 +22,18 @@ public class Booking {
     @Column(name = "finish")
     private Date finish;
 
-    public Booking(String name, long roomId, Date from, Date end) {
+    @Column(name = "status")
+    private String status;
+
+    public BookingAttempt(String name, long roomId, Date from, Date end, String status) {
         this.name = name;
         this.roomId = roomId;
         this.start = from;
         this.finish = end;
+        this.status = status;
     }
 
-    public Booking() {
+    public BookingAttempt() {
 
     }
 
@@ -55,6 +57,10 @@ public class Booking {
         return finish;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     // Setter für den Namen
     public void setName(String name) {
         this.name = name;
@@ -75,5 +81,7 @@ public class Booking {
         this.finish = finish;
     }
 
-    // Setter für die Version (für das optimistische Locking)
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
