@@ -57,18 +57,36 @@ public class BookingService {
         }
     }
 
-    public Booking CreateBookingWithOptimisticLocking(BookingDto bookingDto){
+    public ResponseEntity CreateBookingWithOptimisticLocking(BookingDto bookingDto){
+        boolean isLockAcquired = false;
+        try {
         // Überprüfen Sie, ob eine Buchung für diesen Raum und Zeitraum existiert
         List<Booking> conflictList = bookingRepository.findConflictingBookings(bookingDto.getRoomId(), bookingDto.getStart(), bookingDto.getFinish());
 
         if (!conflictList.isEmpty()) {
-            // Konflikt gefunden, geben Sie null zurück
-            return null;
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        // Attempt to acquire a room lock
+        isLockAcquired = AcquireRoomLock(bookingDto.getRoomId());
+
+        // If lock is not acquired, return LOCKED status
+        if (!isLockAcquired) {
+            return new ResponseEntity<>(HttpStatus.LOCKED);
         }
 
         // Kein Konflikt, speichern Sie die neue Buchung
         Booking booking = new Booking(bookingDto.getName(), bookingDto.getRoomId(), bookingDto.getStart(), bookingDto.getFinish());
-        return bookingRepository.save(booking);
+         bookingRepository.save(booking);
+        return new ResponseEntity<>(booking, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } finally {
+            // Release the room lock if it was acquired
+            if (isLockAcquired) {
+                releaseRoomLock(bookingDto.getRoomId());
+            }
+        }
     }
 
     public ResponseEntity UpdateBooking(BookingDto bookingDto, long id){
